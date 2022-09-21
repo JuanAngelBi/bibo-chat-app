@@ -7,15 +7,21 @@ export function Login() {
         password:''
     })
 
-    return <div>
-
-    <form>
-
-        <input type="email" name="email" id="email"/>
-        <input type="password" name="password" id="password"/>
-
-    </form>
-
-
-    </div>
+    return (
+        <form>
+            <label htmlFor="email">Ingrese email</label>
+            <input 
+                type="email" 
+                name="email" 
+                placeholder="youremail@company.ltd"   
+            />
+            <label htmlFor="password">Ingrese password</label>
+            <input 
+                type="password" 
+                name="password" 
+                id="password"
+            />
+            <button>Login</button>
+        </form>
+    )
 }
