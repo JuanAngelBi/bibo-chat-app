@@ -1,6 +1,6 @@
-import { createContext, useContext } from "react";
-import { createUserWithEmailAndPassword } from "firebase/auth";
-//import { auth } from "../services/firebase";
+import { createContext, useContext, useEffect, useState } from "react";
+import { createUserWithEmailAndPassword,onAuthStateChanged,signInWithEmailAndPassword, signOut, GoogleAuthProvider, signInWithPopup } from "firebase/auth";
+import { auth } from "../services/firebase";
 
 
 export const authContext = createContext() //Contiene el valor de user
@@ -11,11 +11,33 @@ export const useAuth = () => {             //En vez de llamar useContext y conte
 }
 
 export function AuthProvider ({children}) {
-    const signup = (email, password) =>
-        //createUserWithEmailAndPassword(auth, email, password);
-        console.log(email, password);
+    //datos usuario
+    const [user, setUser] = useState(null); //Nadie conectado al iniciar la app
+    const [loading, setLoading] = useState(true);
 
+    //registrar
+    const signup = (email, password) =>
+        createUserWithEmailAndPassword(auth, email, password);
+    //logear
+    const login = (email, password) =>
+        signInWithEmailAndPassword(auth, email, password)
+    //logout
+    const logout = () => signOut(auth);
+    //login google
+    const loginWithGoogle = () => {
+        const googleProvider = new GoogleAuthProvider()
+        return signInWithPopup(auth, googleProvider)
+    }
+
+    useEffect(() => {                       //El useEffect ejecuta algo apenas carga el componente
+        onAuthStateChanged(auth, currentUser => {       //Si esta logeado devuelve el objeto entero, sino null
+            setUser(currentUser);
+            setLoading(false)
+        })
+        //Si se logea o registra el AuthStateChanged va a disparar los datos de usuario
+    }, [])
     return (
-    <authContext.Provider value={{ signup }}>{children}</authContext.Provider>
+    <authContext.Provider value={{ signup, login, user, logout, loading, loginWithGoogle }}>{children}</authContext.Provider>
     );
+    //Exportar objetos
 }
