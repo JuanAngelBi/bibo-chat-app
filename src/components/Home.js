@@ -1,19 +1,27 @@
 import { useAuth } from "../context/authContext";
+import { useEffect } from "react";
+import { db, auth,  } from "../services/firebase";
+import { collection, query, where, onSnapshot, CollectionReference } from "firebase/firestore";
+
 
 export function Home() {
     const {user, logout, loading} = useAuth()
-
     console.log(user)
 
+    //Logout
     const handleLogout = async () => {
         try {
             await logout()
         } catch (error) {
             console.log(error)
         }
-        //Para saber si es ascincrono o no, ir a la funcion de signOut. Si dice Promise es asincrono
-        //Asincrono quiere decir que toma algo de tiempo
     }
+
+    //useEffect(() => {
+        //const userRef = collection(db, 'users')
+        //create query object
+        //const q = query()
+    //}, [])
 
     if (loading == true) return <h1>Loading</h1>
     return <div>
