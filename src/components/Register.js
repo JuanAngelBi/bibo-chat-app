@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useAuth } from "../context/authContext";
 import { Link, useNavigate } from "react-router-dom";
 import { Alert } from "./Alert";
+import { documentUserDB } from "../services/writeDB";
 
 export function Register() {
 
@@ -9,19 +10,22 @@ export function Register() {
         email: '',
         password: '',
     });
-    const { signup } = useAuth()          //Registrar usuario. De ese objeto, quiero extraer el signup
-    const navigate = useNavigate()      //Herramienta de RRD para navegar en las rutas
-    const [error, setError] = useState()    //Error
+    const { signup } = useAuth()                                    //Registrar usuario. De ese objeto, quiero extraer el signup
+    const navigate = useNavigate()                                  //Herramienta de RRD para navegar en las rutas
+    const [error, setError] = useState()                            //Error
 
-    const handleChange = ({ target: { name, value } }) =>       //Actualizar estado
-        setUser({ ...user, [name]: value })    //Copia los datos que tenga el usuario en el momento y luego actualiza
+    const handleChange = ({ target: { name, value } }) =>           //Actualizar estado
+        setUser({ ...user, [name]: value })                         //Copia los datos que tenga el usuario en el momento y luego actualiza
 
-    const handleSubmit = async e => {                             //Ver lo que tiene el estado
-        e.preventDefault()  //Para que no refresque la pagina
-        setError('')        //setError en blanco antes de registrar
-        try {                                   //Si se ejecutó signup sin ningun error, se va al Home
-            await signup(user.email, user.password)   //Ejecutar signup
-            navigate('/')                       //Envia a la ruta inicial
+    const handleSubmit = async e => {                               //Ver lo que tiene el estado
+        e.preventDefault()
+        setError('')
+        console.log(user)
+        try {
+            const userRegister = await signup(user.email, user.password)
+            navigate('/')
+            console.log(userRegister)
+            documentUserDB(userRegister)        //enviar el usuario a firestore
         } catch (error) {
             console.log(error.code)
             setError(error.message)
@@ -62,7 +66,7 @@ export function Register() {
                 <button className="bg-blue-500 hover:bg-blue-700 text-white text-sm font-bold py-2 px-4 rounded fokus:outline-none fokus:shadow-outline">Register</button>
             </form>
 
-            <p className="my-4 text-sm flex justify-between px-3">Already have an Account? <Link to='/login'className="bg-blue-500 hover:bg-blue-700 text-white text-sm font-bold py-1 px-3 rounded fokus:outline-none fokus:shadow-outline">Login</Link></p>
+            <p className="my-4 text-sm flex justify-between px-3">Already have an Account? <Link to='/login' className="bg-blue-500 hover:bg-blue-700 text-white text-sm font-bold py-1 px-3 rounded fokus:outline-none fokus:shadow-outline">Login</Link></p>
 
         </div>
     )
