@@ -2,7 +2,9 @@ import { useAuth } from "../context/authContext";
 import { useEffect, useState } from "react";
 import { db } from "../services/firebase";
 import { collection, query, where, onSnapshot } from "firebase/firestore";
+import "../assets/media/App.css"
 import User from "../components/User";
+import Header from "../components/header";
 
 export function Home() {
     const [users, setUsers] = useState([])
@@ -37,6 +39,50 @@ export function Home() {
         })
         return () => onsub()
     }, [user.uid])
+
+    return (
+        <div class="flex">
+            <div class="w-14 h-screen flex flex-col bg-white"></div>
+            <div class="w-60 h-screen bg-gray-100">
+                <div class="text-xl p-3">Chats</div>
+                <div class="p-3 flex">
+                    <input
+                        type="text"
+                        class="p-2 w-10/12 bg-gray-200"
+                        placeholder="Search for messages or users ..." />
+                    <div class="w-2/12 flex justify-center items-center bg-gray-200">
+                        <img src="../assets/media/static/search.png" />
+                    </div>
+                </div>
+            </div>
+            <div class="flex-grow h-screen bg-green-100"></div>
+        </div>
+        // <div>
+        //     <div>
+        //         <Header></Header>
+        //     </div>
+        //     <div>
+        //         <div className="home_container">
+        //             <div className="users_container"></div>
+        //         </div>
+        //     </div>
+        // </div>
+    )
+    { users.map(user => <User key={user.uid} user={user} />) }
+
+    {/* <Header></Header>
+                <div className="home_container">
+                    <div className="users_container">
+                    </div>
+                </div> */}
+
+    // return (
+    //     <h>
+    //         <h1>Welcome, {user.email}</h1>
+    //         <button onClick={handleLogout}>Logout</button>
+    //     </h>
+    // )
+
     //const selectUser = (user) =>{
     //    setChat(user)
 
@@ -53,7 +99,6 @@ export function Home() {
     //    })
     //} 
 
-
     //const handleSumbit = async(e) =>{
     //    e.preventDefault()
     //    await addDoc(collection(db,"messages",idChat,"chat"),{
@@ -66,18 +111,13 @@ export function Home() {
 
     //if (loading === true) return <h1>Loading</h1>
 
-    return <section className="container h-screen flex overflow-hidden">
-            <div className="bg-white w-4/12 p-6">
-                <h3 className="text-sm text-center mb-8">Chat en Línea</h3>
-            </div>
-            <div className="bg-gray-100 w-screen"></div>
-    </section>
+    // return <section className="container h-screen flex overflow-hidden">
+    //         <div className="bg-white w-4/12 p-6">
+    //             <h3 className="text-sm text-center mb-8">Chat en Línea</h3>
+    //         </div>
+    //         <div className="bg-gray-100 w-screen"></div>
+    // </section>
+
     {/* {users.map(users => <User key={user.uid} user={user} />)} */ }
-
-    {/* <h1>Welcome, {user.email}!</h1>
-
-            <button onClick={handleLogout}>
-                logout
-            </button> */}
 
 }
