@@ -2,22 +2,13 @@ import { useAuth } from "../context/authContext";
 import { useEffect, useState } from "react";
 import { db } from "../services/firebase";
 import { collection, query, where, onSnapshot } from "firebase/firestore";
-import "../assets/media/App.css"
 import User from "../components/User";
-import Header from "../components/header";
+import MessageForm from "../components/MessageForm";
 
 export function Home() {
     const [users, setUsers] = useState([])
-    const { user, logout } = useAuth()
-    //const [chat, setChat] = useState("");
-    //const [text, setText] = useState("");
-    //const [msgs, setMsgs] = useState([]);
-
-
-    //const user1 = user.uid
-    //const user2 = chat.uid
-    //const idChat = user1 > user2 ? `${user1 + user2}` : `${user2+user1}`
-
+    const { user, logout, loading } = useAuth()
+    const [chat, setChat] = useState("")
     //Logout
     const handleLogout = async () => {
         try {
@@ -27,97 +18,61 @@ export function Home() {
         }
     }
     useEffect(() => {
+        //Crea la coleccion en la base de datos
         const userRef = collection(db, "usuarios")
+        //crea el query (contenedor) con el where condition
         const q = query(userRef, where("uid", "not-in", [user.uid]))
-        const onsub = onSnapshot(q, (querySnapshot) => {
-            let lstUsers = []
+        //Ejecuta el snapshot
+        const unsub = onSnapshot(q, (querySnapshot) => {
+            let users = []
             querySnapshot.forEach((doc) => {
-                lstUsers.push(doc.data())
-                //console.log(lstUser)
+                users.push(doc.data())
             })
-            setUsers(lstUsers)
+            setUsers(users);
         })
-        return () => onsub()
-    }, [user.uid])
+        return () => unsub();
+    }, [user.uid]);
+    // console.log(users)
+
+    const selectUser = (user) => {
+        setChat(user)
+        console.log(user)
+    };
+    if (loading === true) return <h1>Loading</h1>
 
     return (
-        <div class="flex">
-            <div class="w-14 h-screen flex flex-col bg-white"></div>
-            <div class="w-60 h-screen bg-gray-100">
-                <div class="text-xl p-3">Chats</div>
-                <div class="p-3 flex">
-                    <input
-                        type="text"
-                        class="p-2 w-10/12 bg-gray-200"
-                        placeholder="Search for messages or users ..." />
-                    <div class="w-2/12 flex justify-center items-center bg-gray-200">
-                        <img src="../assets/media/static/search.png" />
+        // Todo el home
+        <div className="w-full">
+            {/* Header */}
+            <div>
+                <nav className="navbar navbar-expand-lg py-1 px-2 border-2 border-black bg-gray-400">
+                    <div className="container-fluid">
+                        <a className="navbar-brand bg-gray-100 hover:bg-gray-300 text-black text-sm font-bold py-1 px-2 border-2 border-gray-600 rounded fokus:outline-none fokus:shadow-outline" href="/">Chat's App</a>
+                        <div className="justify-content-end" id="navbarNav">
+                            <button className="bg-gray-100 hover:bg-gray-300 text-black text-sm font-bold py-1 px-2 border-2 border-gray-600 rounded fokus:outline-none fokus:shadow-outline" onClick={handleLogout}>Cerrar sesion</button>
+                        </div>
                     </div>
+                </nav>
+            </div>
+            {/* Chats */}
+            <div className="flex">
+                <div className="w-80 h-screen border-r-2 border-b-2 border-l-2 border-black bg-gray-200 overflow-y-auto" name="users_container">
+                    {users.map(user => <User key={user.uid} user={user} selectUser={selectUser} />)}
+                </div>
+                {/* Mapea el contenedor de mensajeria */}
+                <div className="flex-grow h-screen border-r-2 border-b-2 border-black bg-white" name="messages_container">
+                    {chat ? (
+                        <>
+                            <div className="text-xl text-color-black text-center font-bold border-b-2 border-black" name="messages_user">
+                                <h3>{chat.displayName || chat.email}</h3>
+                            </div>
+                            <MessageForm/>
+                        </>
+                    ) : (
+                        <h3 className="text-xl text-color-black text-center font-bold border-b-2 border-black" name="no_conv">Select a user to start conversation</h3>
+                    )}
                 </div>
             </div>
-            <div class="flex-grow h-screen bg-green-100"></div>
         </div>
-        // <div>
-        //     <div>
-        //         <Header></Header>
-        //     </div>
-        //     <div>
-        //         <div className="home_container">
-        //             <div className="users_container"></div>
-        //         </div>
-        //     </div>
-        // </div>
     )
-    { users.map(user => <User key={user.uid} user={user} />) }
-
-    {/* <Header></Header>
-                <div className="home_container">
-                    <div className="users_container">
-                    </div>
-                </div> */}
-
-    // return (
-    //     <h>
-    //         <h1>Welcome, {user.email}</h1>
-    //         <button onClick={handleLogout}>Logout</button>
-    //     </h>
-    // )
-
-    //const selectUser = (user) =>{
-    //    setChat(user)
-
-    //    const user2 = user.uid
-    //    const idChat = user1 > user2 ? `${user1 + user2}` : `${user2+user1}`
-    //    const msgsRef = collection(db,"messages",idChat,"chat")
-    //    const q = query(msgsRef,orderBy("createdAt","asc"))
-    //    onSnapshot(q,querySnapshot =>{
-    //        let msgs = []
-    //        querySnapshot.forEach(doc =>{
-    //            msgs.push(doc.data())
-    //        })
-    //    setMsgs(msgs)
-    //    })
-    //} 
-
-    //const handleSumbit = async(e) =>{
-    //    e.preventDefault()
-    //    await addDoc(collection(db,"messages",idChat,"chat"),{
-    //        text,
-    //        from:user1,
-    //        to:user2,
-    //        createdAt: Timestamp.fromDate(new Date())},
-    //    setText(""))
-    //}
-
-    //if (loading === true) return <h1>Loading</h1>
-
-    // return <section className="container h-screen flex overflow-hidden">
-    //         <div className="bg-white w-4/12 p-6">
-    //             <h3 className="text-sm text-center mb-8">Chat en Línea</h3>
-    //         </div>
-    //         <div className="bg-gray-100 w-screen"></div>
-    // </section>
-
-    {/* {users.map(users => <User key={user.uid} user={user} />)} */ }
-
 }

@@ -9,7 +9,7 @@ export function Login() {
         email: '',
         password: '',
     });
-    const { login, loginWithGoogle, resetPassword } = useAuth()              //Auth                
+    const { login, loginWithGoogle, resetPassword, saveUser, stateUser } = useAuth()              //Auth                
     const navigate = useNavigate()                          //Navigate
     const [error, setError] = useState()                    //Error
 
@@ -20,11 +20,18 @@ export function Login() {
         e.preventDefault()
         setError('')
         try {
-            await login(user.email, user.password)
+            const userLogged = await login(user.email, user.password)
+            stateUser(userLogged)
             navigate('/')
         } catch (error) {
-            console.log(error.code)
-            setError(error.message)
+            setError(error.code)
+            if(error.code === "auth/wrong-password"){
+                setError("Incorrect Password")
+            } else if(error.code === "auth/user-not-found"){
+                setError("User don't found")
+            } else if( (error.code === "auth/invalid-email")){
+                setError("Invalid email")
+            }
         }
     }
 
@@ -41,8 +48,11 @@ export function Login() {
 
     const handleGoogleSignIn = async () => {
         try {
-            await loginWithGoogle()
+            const userLoggedGoogle = await loginWithGoogle()
+            saveUser(userLoggedGoogle)
+            stateUser(userLoggedGoogle)
             navigate('/')
+            
         } catch (error) {
             setError(error.message)
         }
@@ -80,7 +90,7 @@ export function Login() {
                 </div>
 
                 <div className="flex items-center justify-between">
-                    <button className="bg-blue-500 hover:bg-blue-700 text-white text-sm font-bold py-2 px-4 rounded fokus:outline-none fokus:shadow-outline">Login</button>
+                    <button onClick={handleSubmit} className="bg-blue-500 hover:bg-blue-700 text-white text-sm font-bold py-2 px-4 rounded fokus:outline-none fokus:shadow-outline">Login</button>
                     <a 
                         href="#!" 
                         className="inline-block align-baseline font-bold text-sm text-blue-500 hover:text-blue-800" 

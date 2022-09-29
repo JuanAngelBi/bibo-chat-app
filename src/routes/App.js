@@ -1,9 +1,9 @@
 import { Routes, Route } from "react-router-dom";
-import { Home } from "./pages/Home";
-import { Login } from "./pages/Login";
-import { ProtectedRoute } from "./context/ProtectedRoute";
-import { Register } from "./pages/Register";
-import { AuthProvider } from "./context/authContext";
+import { Home } from "../pages/Home";
+import { Login } from "../pages/Login";
+import { ProtectedRoute } from "../context/ProtectedRoute";
+import { Register } from "../pages/Register";
+import { AuthProvider } from "../context/authContext";
 
 function App() {
   return (
