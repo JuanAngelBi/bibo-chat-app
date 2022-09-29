@@ -16,7 +16,7 @@ export function Login() {
     const handleChange = ({ target: { name, value } }) =>       //Actualizar estado
         setUser({ ...user, [name]: value })
 
-    const handleSubmit = async e => {
+    const handleSubmit = async e => {                           //Envio de los datos
         e.preventDefault()
         setError('')
         try {
@@ -35,7 +35,7 @@ export function Login() {
         }
     }
 
-    const handleResetPassword = async () => {
+    const handleResetPassword = async () => {                           //Restaurar contraseña
         if (!user.email) return setError("Please enter your email");
 
         try {
@@ -46,7 +46,7 @@ export function Login() {
         }
     }
 
-    const handleGoogleSignIn = async () => {
+    const handleGoogleSignIn = async () => {                            //Manejo del logeo con google
         try {
             const userLoggedGoogle = await loginWithGoogle()
             saveUser(userLoggedGoogle)
